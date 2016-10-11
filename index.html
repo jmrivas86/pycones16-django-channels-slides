@@ -1,0 +1,221 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>PyConES 2016 – Channels is coming: real-time web in Django</title>
+
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/black.css">
+
+    <!-- Theme used for syntax highlighting of code -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+
+    <!-- Printing and PDF exports -->
+    <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+    </script>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+            <section>
+                <h1>PyConES 2016</h1>
+                <h3>Channels is coming: real-time web in Django</h3>
+                <p>
+                    <small><a href="http://jmrivas.net">José Manuel Rivas</a> / <a href="http://twitter.com/jmrivas86">@jmrivas86</a></small>
+                </p>
+            </section>
+            <section  data-background-image="imgs/ayesa.png" data-background-size="15%" data-background-position="77% 60%">
+                <h1>¡Hola Mundo!</h1>
+                <p>Me llamo José Manuel Rivas y soy</p>
+                <p>Python/Django developer en </p>
+            </section>
+            <section>
+                <h2>Django, HTTP y WSGI</h2>
+                <p>Django se ha basado en un modelo de peticiones y respuestas</p>
+            </a>
+            </section>
+            <section data-background="imgs/django-trad.jpg" data-background-size="70%">
+            </section>
+            <section>
+                <h2>¿Qué es Channels?</h2>
+                <p>Es <a href="https://www.djangoproject.com/weblog/2016/sep/09/channels-adopted-official-django-project/">anunciado</a> como proyecto oficial de Django el 9 de Septiembre de 2016 </p>
+                <p>La Fundación Mozilla <a href="https://blog.mozilla.org/blog/2015/12/10/mozilla-open-source-support-first-awards-made/">apoyó</a> en diciembre de 2015 a este proyecto con $150,000</p>
+            </section>
+            <section>
+                <h2>¿Qué es Channels?</h2>
+                <p>Channels añade una capa nueva que permite principalmente 2 características importantes:</p>
+                <ul>
+                    <li class="fragment fade-up">Websockets</li>
+                    <li class="fragment fade-up">Tareas en segundo plano</li>
+                    <li class="fragment fade-up">...</li>
+                    <li class="fragment fade-up">HTTP2 Server push</li>
+                    <li class="fragment fade-up">Soporte de Sesión y autenticación para WebSockets</li>
+                    <li class="fragment fade-up">Login de usuarios en WebSockets basados en las cookies</li>
+                    <li class="fragment fade-up">Posibilidad de ampliación a otros protocolos o tipos de eventos  WebRTC, SMS...)</li>
+                </ul>
+            </section>
+            <section  data-background="imgs/websockets-flow.png" data-background-size="70%">
+            </section>
+            <section  data-background="imgs/websockets-flow-with-client-push.png" data-background-size="70%">
+            </section>
+            <section>
+                <h2>¿Hay otras implementaciones de websockets para Django?</h2>
+                <p>
+                    Sí y no.
+                    <ul>
+                        <li>Sí, hay soluciones para implementar websockets en Django.</li>
+                        <li>No, no hay nada "estandar".</li>
+                    </ul>
+                </p>
+            </section>
+            <section>
+                <h2>Ejemplos de implementaciones para websocket en python</h2>
+                <ul>
+                    <li><span style="color: green;">AutobahnPython</span> - WebSocket & WAMP for Python on Twisted and asyncio.</li>
+                    <li><span style="color: green;">Crossbar</span> - Open-source Unified Application Router (Websocket & WAMP for Python on Autobahn).</li>
+                    <li><span style="color: green;">django-socketio</span> - WebSockets for Django.</li>
+                    <li><span style="color: green;">WebSocket-for-Python</span> - WebSocket client and server library for Python 2 and 3 as well as PyPy.</li>
+                </ul>
+            </section>
+            <section>
+                <h2>Vale, ¿y cómo funciona esto?</h2>
+                <p>
+                    <a href="https://www.youtube.com/watch?v=2sEPipctTxw">Video</a> de la PyCon 2016 en Portland de parte Andrew Godwin.
+                </p>
+            </section>
+            <section>
+                <ul>
+                    <li><strong>Channel backend:</strong> Responsable del transporte de mensajes.</li>
+                    <li><strong>Worker server:</strong> Escuchan en todos los canales pertinentes y ejecutan código del consumer cuando un mensaje está listo.</li>
+                    <li><strong>Interface server:</strong> Se comunica entre Django y el mundo exterior. Esto incluye un adaptador de WSGI, así como un servidor independiente WebSocket.</li>
+                </ul>
+            </section>
+            <section data-background="imgs/channels-capa.png" data-background-size="60%">
+            </section>
+            <section>
+                <h2>Conceptos:</h2>
+                <ul>
+                    <li><strong>Channel: </strong>Cola FIFO con envío y recepción de muchas operaciones. Su nombre es una cadena. Como máximo una vez (at-most-once) la entrega a un solo listener a la vez.</li>
+                    <li><strong>Group: </strong>Nombre conjunto de canales con operaciones de Añadir/quitar/envío </li>
+                    <li><strong>Messages: </strong> Representación de las sesiones http y websockets</li>
+                </ul>
+            </section>
+            <section>
+                <h1>Ejemplos</h1>
+            </section>
+            <section>
+                <h2>LIVEBLOG</h2>
+                <p>Queremos que la gente tenga las nuevas entradas del blog publicadas sin refrescar la página.</p>
+            </section>
+            <section>
+                <h2>LIVEBLOG</h2>
+                <ul>
+                    <li>La gente abre un WebSocket cuando acceden en la página</li>
+                    <li>El WebSocket se agrega a un grupo</li>
+                    <li>Cuando se guarda el post, enviamos el mensaje a ese grupo</li>
+                </ul>
+            </section>
+            <section>
+                <p>El WebSocket se agrega a un grupo</p>
+                <pre>
+                    <code class="hljs" data-trim contenteditable>
+# in consumers.py
+def ws_connect(message):
+    Group("liveblog").add(message.reply_channel)
+                    </code>
+                </pre>
+                <p>Cuando se guarda el post (save del model), enviamos el mensaje a ese grupo</p>
+                <pre>
+                    <code class="hljs" data-trim contenteditable>
+                        class BlogPost(models.Model):
+     ...
+     def save(self, *args, **kwargs):
+     ...
+     Group("liveblog").send({
+     "text": json.dumps({"id": self.id}),
+     })
+                    </code>
+                </pre>
+            </section>
+            <section>
+                <h2>CHAT</h2>
+                <p>La gente puede enviar mensajes al chat y le llegará a todo el mundo conectado</p>
+            </section>
+            <section>
+                <h2>CHAT</h2>
+                <ul>
+                    <li>Cuando las personas entran en un chat, se unen a un grupo.</li>
+                    <li>Cuando recibimos un mensaje lo enviamos al grupo.</li>
+                </ul>
+            </section>
+            <section>
+                <p>Cuando las personas entran en un chat, se unen a un grupo.</p>
+                <pre>
+                    <code class="hljs" data-trim contenteditable>
+# in consumers.py
+def ws_connect(message):
+    Group("chat").add(message.reply_channel)
+                    </code>
+                </pre>
+                <p>Cuando recibimos un mensaje lo enviamos al grupo</p>
+                <pre>
+                    <code class="hljs" data-trim contenteditable>
+                        def ws_receive(message):
+ Group("chat").send({
+ "text": message["text"],
+ })
+                    </code>
+                </pre>
+            </section>
+            <section>
+                <p>Y hacemos saber a Django los consumers que manejan los distintos eventos</p>
+                <pre>
+                    <code class="hljs" data-trim contenteditable>
+                        # in routing.py
+        routing = [
+         route("websocket.connect", consumers.ws_connect),
+         route("websocket.receive", consumers.ws_receive),
+        ]
+                    </code>
+                </pre>
+
+            </section>
+            <section data-background="imgs/demoday.gif" data-background-size="30%">
+                <h2>DEMO</h2>
+            </section>
+        </div>
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.js"></script>
+
+    <script>
+    // More info https://github.com/hakimel/reveal.js#configuration
+    Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+
+        transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+        // More info https://github.com/hakimel/reveal.js#dependencies
+        dependencies: [
+            { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+            { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+            { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+            { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+            { src: 'plugin/zoom-js/zoom.js', async: true },
+            { src: 'plugin/notes/notes.js', async: true }
+        ]
+    });
+    </script>
+</body>
+</html>
